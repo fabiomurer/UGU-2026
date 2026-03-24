@@ -29,7 +29,7 @@ TEAM_NAME = os.environ.get(
     default_team_name(normalize_team_id(RAW_TEAM_ID, KNOWN_TEAMS), KNOWN_TEAMS),
 )
 FLAG = os.environ.get("FLAG", "lab-secret")
-VALIDATOR_URL = "http://130.136.3.32:8000"
+VALIDATOR_URL = "http://ugu.students.cs.unibo.it"
 SESSION_TIMEOUT_SECONDS = 300
 
 

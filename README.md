@@ -62,7 +62,7 @@ Il client stampa le flag, ma i punti si assegnano quando inviate la flag al vali
 Comando (ripetere per ogni flag):
 
 ```bash
-curl -s -X POST http://130.136.3.32:8000/submit \
+curl -s -X POST http://ugu.students.cs.unibo.it/submit \
   -H 'Content-Type: application/json' \
   -d '{"team":"<nome_team>","victim":"<team_avversario>", "step":"<STEP>", "flag":"<FLAG>"}'
 ```
