@@ -2,6 +2,8 @@
 
 ### ADMStaff lab - https://students.cs.unibo.it
 
+### Scoreboard live: https://ugu.students.cs.unibo.it/scoreboard
+
 Ciao! Benvenuti al laboratorio di orientamento organizzato da ADMStaff :)
 
 Qui troverete alcune info utili per utilizzare i file presenti in questa cartella
@@ -17,7 +19,15 @@ e mettervi alla prova per giocare insieme con l'informatica.
 
 ## 1. Avvio team_server
 
-Per prima cosa, avviate il server del vostro team:
+Prima di avviare il server del team, dovrete trovare il vostro ip e impostarlo nel file `team_server.py` alla riga 11:
+
+```python
+HOST = "0.0.0.0" # Sostituite con l'IP reale del vostro team
+```
+
+per trovare il votro ip usate il comando `ip a` e cercate l'ip associato alla vostra interfaccia di rete (di solito `eth0` o `wlan0`).
+
+A questo punto potrete avviare il server del vostro team, per registrarvi al sistema, verrà poi mostrato sul monitor il vostro nome con l'ip, si aggiornerà poi man mano che risolverete gli step:
 
 ```bash
 TEAM_ID=<nome_team> TEAM_SERVER_PORT=5000 python3 team_server.py
@@ -62,7 +72,7 @@ Il client stampa le flag, ma i punti si assegnano quando inviate la flag al vali
 Comando (ripetere per ogni flag):
 
 ```bash
-curl -s -X POST http://ugu.students.cs.unibo.it/submit \
+curl -s -X POST https://ugu.students.cs.unibo.it/submit \
   -H 'Content-Type: application/json' \
   -d '{"team":"<nome_team>","victim":"<team_avversario>", "step":"<STEP>", "flag":"<FLAG>"}'
 ```

@@ -7,9 +7,7 @@ import random
 import string
 
 from lib.quiz_api import (
-    default_team_name,
     normalize_team_id,
-    parse_known_teams,
     register_team_online,
     resolve_team_id,
 )
@@ -17,19 +15,16 @@ from lib.quiz_api import (
 HOST = "0.0.0.0"  # TODO: ogni team deve configurare questo valore con l'IP pubblico del proprio server
 PORT = int(os.environ.get("TEAM_SERVER_PORT", "5000"))
 
-KNOWN_TEAMS = parse_known_teams(
-    os.environ.get("KNOWN_TEAMS", "teamA,teamB,teamC,teamD,teamE,teamF")
-)
-
 RAW_TEAM_ID = os.environ.get("TEAM_ID", "1")
 TEAM_ID = ""
-
-TEAM_NAME = os.environ.get(
-    "TEAM_NAME",
-    default_team_name(normalize_team_id(RAW_TEAM_ID, KNOWN_TEAMS), KNOWN_TEAMS),
+DEFAULT_TEAM_NAME = (
+    f"team{normalize_team_id(RAW_TEAM_ID)}"
+    if str(RAW_TEAM_ID).strip().isdigit()
+    else str(RAW_TEAM_ID).strip()
 )
+TEAM_NAME = os.environ.get("TEAM_NAME", DEFAULT_TEAM_NAME)
 FLAG = os.environ.get("FLAG", "lab-secret")
-VALIDATOR_URL = "http://ugu.students.cs.unibo.it"
+VALIDATOR_URL = os.environ.get("VALIDATOR_URL", "https://ugu.students.cs.unibo.it")
 SESSION_TIMEOUT_SECONDS = 300
 
 
@@ -288,7 +283,7 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
 
 async def main():
     global TEAM_ID
-    TEAM_ID = await resolve_team_id(VALIDATOR_URL, TEAM_NAME, RAW_TEAM_ID, KNOWN_TEAMS)
+    TEAM_ID = await resolve_team_id(VALIDATOR_URL, TEAM_NAME, RAW_TEAM_ID)
 
     await register_team_online(VALIDATOR_URL, TEAM_ID, "online")
     server = await asyncio.start_server(handle_client, HOST, PORT)

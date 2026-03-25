@@ -43,35 +43,19 @@ def get_team_name(base_url: str, team_id: str) -> str:
     return str(data["name"])
 
 
-def parse_known_teams(known_teams_raw: str) -> list[str]:
-    return [t.strip() for t in known_teams_raw.split(",") if t.strip()]
-
-
-def normalize_team_id(raw_team_id: str, known_teams: list[str]) -> str:
+def normalize_team_id(raw_team_id: str) -> str:
     value = str(raw_team_id).strip()
     if value.isdigit():
         return value
-
-    for index, team_name in enumerate(known_teams, start=1):
-        if value.lower() == team_name.lower():
-            return str(index)
-
     raise ValueError(
-        f"Invalid TEAM_ID '{raw_team_id}'. Use numeric id (e.g. 1) or one of: {', '.join(known_teams)}"
+        f"Invalid TEAM_ID '{raw_team_id}'. Use numeric TEAM_ID (e.g. 1) or provide TEAM_NAME with a reachable validator URL"
     )
-
-
-def default_team_name(team_id: str, known_teams: list[str]) -> str:
-    if team_id.isdigit() and 1 <= int(team_id) <= len(known_teams):
-        return known_teams[int(team_id) - 1]
-    return f"team{team_id}"
 
 
 async def resolve_team_id(
     validator_url: str,
     team_name: str,
     raw_team_id: str,
-    known_teams: list[str],
 ) -> str:
     normalized_team_name = team_name.strip()
     if normalized_team_name:
@@ -80,14 +64,17 @@ async def resolve_team_id(
                 return await asyncio.to_thread(
                     get_team_id, validator_url, normalized_team_name
                 )
+            except urllib.error.HTTPError as err:
+                if err.code not in {400, 404}:
+                    print(
+                        f"[!] Could not resolve TEAM_ID from validator for '{normalized_team_name}': {err}"
+                    )
             except Exception as err:
                 print(
                     f"[!] Could not resolve TEAM_ID from validator for '{normalized_team_name}': {err}"
                 )
 
-        return normalize_team_id(normalized_team_name, known_teams)
-
-    return normalize_team_id(raw_team_id, known_teams)
+    return normalize_team_id(raw_team_id)
 
 
 def is_correct_answer(base_url: str, team: str, step: int, answer: str) -> bool:
